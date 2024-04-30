@@ -7,6 +7,9 @@ from langchain.embeddings import HuggingFaceEmbeddings
 
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.document_loaders import TextLoader
+from langchain.prompts import PromptTemplate
+from langchain.schema.runnable import RunnablePassthrough
+from langchain.schema.output_parser import StrOutputParser
 
 def create_retriever():
     file_loader = TextLoader("./data/fact1.txt")
@@ -18,20 +21,30 @@ def create_retriever():
 
 def test_local_retrieval_qa(model: str, df: pd.DataFrame, retriever: FAISS):
     print("Testing model: {}".format(model))
-    chain = RetrievalQA.from_llm(
-        llm=ChatOllama(
+    prompt = PromptTemplate.from_template(
+                """
+                <s> [INST] You are an assistant for question-answering tasks. Use the following pieces of retrieved context 
+                to answer the question. If you don't know the answer, just say that you don't know. Use three sentences
+                maximum and keep the answer concise. [/INST] </s> 
+                [INST] Question: {question} 
+                Context: {context} 
+                Answer: [/INST]
+                """
+    )    
+
+    llm=ChatOllama(
             base_url="http://localhost:11434",
-            model=model),
-        retriever=retriever,
-    )
-    
+            model=model, temperature=0, seed=1)
+    chain = ({"context": retriever, "question": RunnablePassthrough()}
+                        | prompt
+                        | llm
+                        | StrOutputParser())        
     predictions = []
     for it, row in tqdm(df.iterrows(), total=len(df)):
         # print("Processing {} {}".format(it, row["question"]))
-        resp = chain.invoke({
-            "query": row["question"]
-        })
-        predictions.append(resp["result"])
+        resp = chain.invoke(row["question"])
+        print(resp)
+        predictions.append(resp)
     
     df[f"{model}_result"] = predictions
     
