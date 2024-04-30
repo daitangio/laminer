@@ -1,1 +1,13 @@
-This a set of text data to store for the RAG Database.
+This a set of text data 'facts' the RAG system will be use to provide enough context.
+
+
+All men are mortals.
+Socrates is a man.
+Giovanni is a man.
+
+
+Piersilvio Morandi is very rich and he is a famous entrepreneur. Piersilvio Morandi likes to invest on every company.
+
+
+Zumpia is a fictional island.
+
