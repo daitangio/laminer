@@ -25,23 +25,22 @@ def create_retriever():
             search_kwargs={
                 "k": 3,
                 "score_threshold": 0.5,
-            },            
+            },
         )
     return retriever
 
 def test_local_retrieval_qa(model: str, df: pd.DataFrame, retriever: any):
-    print("Testing model: {}".format(model))
-    
+    print(f"Testing model: {model}")
     prompt = PromptTemplate.from_template(
-                """
-                <s> [INST] You are an assistant for question-answering tasks. Use the following pieces of retrieved context 
-                to answer the question. If you don't know the answer, just say that you don't know. Use three sentences
-                maximum and keep the answer concise. [/INST] </s> 
-                [INST] Question: {question} 
-                Context: {context} 
-                Answer: [/INST]
-                """
-    )    
+        """
+        <s> [INST] You are an assistant for question-answering tasks. Use the following pieces of retrieved context 
+        to answer the question. If you don't know the answer, just say that you don't know. Use three sentences
+        maximum and keep the answer concise. [/INST] </s> 
+        [INST] Question: {question} 
+        Context: {context} 
+        Answer: [/INST]
+        """
+    )
 
     llm=ChatOllama(
             base_url="http://localhost:11434",
@@ -88,7 +87,7 @@ def rag(dataModel: DataModel,models):
     # GG At the moment llama3 presnet a bug in the outuput, it seems unable to understand the prompt.    
     for modelName in models:
         test_local_retrieval_qa(modelName,dataModel.df,dataModel.retriever)
-        dataModel.df.to_csv("./output/qa_retrieval_prediction.csv", index=False)        
+        dataModel.df.to_csv("./output/qa_retrieval_prediction.csv", index=False)
 
 @cli.command()
 @click.pass_obj
