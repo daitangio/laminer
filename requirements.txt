@@ -26,7 +26,6 @@ Deprecated==1.2.14
 distlib==0.3.8
 distro==1.9.0
 dulwich==0.20.50
--e git+ssh://git@github.com/daitangio/laminer.git@335c1459c9e9271513975e8f137bc9ca8b6deb38#egg=examiner&subdirectory=examiner
 faiss-cpu==1.8.0
 fastapi==0.110.3
 fastembed==0.1.3
