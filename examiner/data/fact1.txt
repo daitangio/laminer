@@ -1,13 +1,12 @@
 This a set of text data 'facts' the RAG system will be use to provide enough context.
 
+About mortailty:
 
 All men are mortals.
 Socrates is a man.
 Giovanni is a man.
 
 
-Piersilvio Morandi is very rich and he is a famous entrepreneur. Piersilvio Morandi likes to invest on every company.
-
-
+About Islands:
 Zumpia is a fictional island.
 

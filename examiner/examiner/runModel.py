@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import pandas as pd
 from tqdm import tqdm
 from langchain.chains import RetrievalQA
@@ -10,6 +11,7 @@ from langchain.prompts import PromptTemplate
 from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser
 from langchain.vectorstores.utils import filter_complex_metadata
+import click
 
 def create_retriever():
     file_loader = TextLoader("./data/fact1.txt")
@@ -57,14 +59,76 @@ def test_local_retrieval_qa(model: str, df: pd.DataFrame, retriever: any):
         predictions.append(resp)
     
     df[f"{model}_result"] = predictions
+
+class DataModel:
+    def __init__(self, df,retriever,debugMode):       
+        self.df=df
+        self.retriever=retriever
+        self.debugMode=debugMode
+
+
+@click.group()
+@click.option('--debug/--no-debug', default=False)
+@click.pass_context
+def cli(ctx,debug ):
+    df = pd.read_csv("./data/test1.csv")
+    r=create_retriever()    
+    ctx.obj=DataModel(df,r,debug)
     
 
-
-if __name__ == "__main__":
-    df = pd.read_csv("./data/test1.csv")
-    r=create_retriever()
+@cli.command()
+@click.pass_obj
+@click.argument("models",  nargs=-1)
+def rag(dataModel: DataModel,models):
+    """
+    Run the required models using rag dataset
+    Example of models: gemma:2b
+    """
     # Super prod list ( "mistral-openorca:7b", "mistral:7b","llama2:7b","gemma:2b", "zephyr", "orca-ini", "phi"  )
-    # GG At the moment llama3 presnet a bug in the outuput, it seems unable to understand the prompt.
-    for modelName in ( "gemma:2b", "mistral:7b"):
-        test_local_retrieval_qa(modelName,df,r)    
-        df.to_csv("./output/qa_retrieval_prediction.csv", index=False)        
+    # GG At the moment llama3 presnet a bug in the outuput, it seems unable to understand the prompt.    
+    for modelName in models:
+        test_local_retrieval_qa(modelName,dataModel.df,dataModel.retriever)
+        dataModel.df.to_csv("./output/qa_retrieval_prediction.csv", index=False)        
+
+@cli.command()
+@click.pass_obj
+@click.argument("qa_file",type=click.File('rb'))
+@click.argument("report_file")
+@click.argument("models",  nargs=-1)
+def report(dataModel: DataModel, qa_file,report_file, models):
+    """
+    Open a qa_retrival prediction csv, and for every model compute results
+
+    """
+
+    # TP: Statements that are present in both the answer and the ground truth.
+    # FP: Statements present in the answer but not found in the ground truth.
+    # FN: Relevant statements found in the ground truth but omitted in the answer.    
+    df = pd.read_csv(qa_file)
+    total=len(df)
+    print(f"Total questions:{total} Models to check:{len(models)}")
+    precisionList=[]
+    for model in models:
+        TP=0.0        
+        if dataModel.debugMode:
+            print(f"Processing {model}")
+        # load question,answer,gemma:2b_result
+        for i,row in df.iterrows():
+            modelAnswer=row[f"{model}_result"]
+            if dataModel.debugMode:
+                print("Q:",row["question"])
+                print("\tA:",modelAnswer)
+            if row["answer"] in modelAnswer:
+                TP=TP+1
+        precision= TP/total
+        print(f"{model} Precision: {precision}")
+        precisionList.append(precision)
+    
+    report_output = pd.DataFrame({
+        "model": models,
+        "precision": precisionList 
+    })
+    report_output.to_csv(report_file, index=False)
+
+if __name__ == '__main__':
+    cli(obj={})

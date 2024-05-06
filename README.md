@@ -13,3 +13,16 @@ Then use poetry to install examiner dependencies
 Suppose you have your ollama in a host calld fatlama, proxy it with
 
     ssh -L 11434:127.0.0.1:11434 -N -f fatlama
+
+
+# Command examples
+
+To run some tests and then collect results try
+
+    examiner/runModel.py rag gemma:2b mistral:7b mistral-openorca:7b llama2:7b zephyr orca-ini phi
+
+    examiner/runModel.py report output/result1_qa_retrieval_prediction.csv out.csv gemma:2b mistral:7b
+
+# Major references
+
+1) https://medium.com/@vndee.huynh/how-to-effectively-evaluate-your-rag-llm-applications-2139e2d2c7a4
