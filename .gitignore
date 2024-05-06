@@ -161,3 +161,4 @@ cython_debug/
 venv
 laminer.code-workspace
 examiner/output/qa_retrieval_prediction.csv
+*.csv
