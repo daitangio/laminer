@@ -12,6 +12,13 @@ from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser
 from langchain.vectorstores.utils import filter_complex_metadata
 import click
+import re
+
+from datetime import datetime
+def buildFilePrefix():
+    today = datetime.today().date()
+    formatted_date = today.strftime('%Y-%m-%d')
+    return formatted_date
 
 def create_retriever(question_dir):
     file_loader = TextLoader(f"{question_dir}/facts/fact1.txt")
@@ -78,11 +85,6 @@ def cli(ctx,debug, question_dir,output_dir ):
     r=create_retriever(question_dir)    
     ctx.obj=DataModel(df,r,debug,question_dir,output_dir)
     
-def buildFilePrefix():
-    from datetime import datetime
-    today = datetime.today().date()
-    formatted_date = today.strftime('%Y-%m-%d')
-    return formatted_date
 
 @cli.command()
 @click.pass_obj
@@ -127,11 +129,21 @@ def report(data_model: DataModel, qa_file, models):
         # load question,answer,gemma:2b_result
         for i,row in df.iterrows():
             modelAnswer=row[f"{model}_result"]
+            expectedAnswer=str(row["answer"])
             if data_model.debug_mode:
-                print("Q:",row["question"])
+                print("Q:",row["question"])                
                 print("\tA:",modelAnswer)
-            if str(row["answer"]) in modelAnswer:
+            if expectedAnswer in modelAnswer:
                 TP=TP+1
+            else:
+                # Try harder
+                pattern=re.compile(expectedAnswer)
+                if(pattern.match(modelAnswer)):
+                    TP=TP+1
+                    if data_model.debug_mode:
+                        print("REGEXP MATCH")
+                elif data_model.debug_mode:
+                    print("*FAILED* Expected:", expectedAnswer)
         precision= TP/total
         print(f"{model} Precision: {precision}")
         precisionList.append(precision)
