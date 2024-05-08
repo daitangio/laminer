@@ -13,8 +13,8 @@ from langchain.schema.output_parser import StrOutputParser
 from langchain.vectorstores.utils import filter_complex_metadata
 import click
 
-def create_retriever():
-    file_loader = TextLoader("./data/fact1.txt")
+def create_retriever(question_dir):
+    file_loader = TextLoader(f"{question_dir}/facts/fact1.txt")
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1024, chunk_overlap=100)
     chunks = text_splitter.split_documents(file_loader.load())
     chunks = filter_complex_metadata(chunks)
@@ -60,46 +60,59 @@ def test_local_retrieval_qa(model: str, df: pd.DataFrame, retriever: any):
     df[f"{model}_result"] = predictions
 
 class DataModel:
-    def __init__(self, df,retriever,debugMode):       
+    def __init__(self, df,retriever,debug_mode,question_dir,output_dir):       
         self.df=df
         self.retriever=retriever
-        self.debugMode=debugMode
+        self.debug_mode=debug_mode
+        self.question_dir=question_dir
+        self.output_dir=output_dir
 
 
 @click.group()
 @click.option('--debug/--no-debug', default=False)
+@click.option('--question-dir', default="./data", envvar="LAMINER_QUESTION_DIR", help="Data dir containing question sets and rag facts")
+@click.option('--output-dir',  required=True, envvar="LAMINER_OUTPUT_DIR", help="Destination directory for rag tests")
 @click.pass_context
-def cli(ctx,debug ):
-    df = pd.read_csv("./data/test1.csv")
-    r=create_retriever()    
-    ctx.obj=DataModel(df,r,debug)
+def cli(ctx,debug, question_dir,output_dir ):
+    df = pd.read_csv(question_dir+"/questions/test1.csv")
+    r=create_retriever(question_dir)    
+    ctx.obj=DataModel(df,r,debug,question_dir,output_dir)
     
+def buildFilePrefix():
+    from datetime import datetime
+    today = datetime.today().date()
+    formatted_date = today.strftime('%Y-%m-%d')
+    return formatted_date
 
 @cli.command()
 @click.pass_obj
 @click.argument("models",  nargs=-1)
-def rag(dataModel: DataModel,models):
+def rag(data_model: DataModel,models):
     """
     Run the required models using rag dataset
     Example of models: gemma:2b
     """
     # Super prod list ( "mistral-openorca:7b", "mistral:7b","llama2:7b","gemma:2b", "zephyr", "orca-ini", "phi"  )
-    # GG At the moment llama3 presnet a bug in the outuput, it seems unable to understand the prompt.    
+    # GG At the moment llama3 presnet a bug in the outuput, it seems unable to understand the prompt. 
+    formatted_date=buildFilePrefix()
+    dest_dir=f"{data_model.output_dir}/{formatted_date}_qa_retrieval_prediction.csv"
+    print(f"Destination report:{dest_dir}")
     for modelName in models:
-        test_local_retrieval_qa(modelName,dataModel.df,dataModel.retriever)
-        dataModel.df.to_csv("./output/qa_retrieval_prediction.csv", index=False)
+        test_local_retrieval_qa(modelName,data_model.df,data_model.retriever)
+        data_model.df.to_csv(dest_dir, index=False)
 
 @cli.command()
 @click.pass_obj
 @click.argument("qa_file",type=click.File('rb'))
-@click.argument("report_file")
 @click.argument("models",  nargs=-1)
-def report(dataModel: DataModel, qa_file,report_file, models):
+def report(data_model: DataModel, qa_file, models):
     """
     Open a qa_retrival prediction csv, and for every model compute results
 
     """
-
+    prefix=buildFilePrefix()
+    report_file=f"{data_model.output_dir}/{prefix}-report.csv"
+    print(f"Reporting into {report_file}")
     # TP: Statements that are present in both the answer and the ground truth.
     # FP: Statements present in the answer but not found in the ground truth.
     # FN: Relevant statements found in the ground truth but omitted in the answer.    
@@ -109,15 +122,15 @@ def report(dataModel: DataModel, qa_file,report_file, models):
     precisionList=[]
     for model in models:
         TP=0.0        
-        if dataModel.debugMode:
+        if data_model.debug_mode:
             print(f"Processing {model}")
         # load question,answer,gemma:2b_result
         for i,row in df.iterrows():
             modelAnswer=row[f"{model}_result"]
-            if dataModel.debugMode:
+            if data_model.debug_mode:
                 print("Q:",row["question"])
                 print("\tA:",modelAnswer)
-            if row["answer"] in modelAnswer:
+            if str(row["answer"]) in modelAnswer:
                 TP=TP+1
         precision= TP/total
         print(f"{model} Precision: {precision}")

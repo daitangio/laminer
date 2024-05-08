@@ -1,2 +1,11 @@
-Major reference 
-https://medium.com/@vndee.huynh/how-to-effectively-evaluate-your-rag-llm-applications-2139e2d2c7a4
+Usage: run.py [OPTIONS] COMMAND [ARGS]...
+
+Options:
+  --debug / --no-debug
+  --question-dir TEXT   Data dir containing question sets and rag facts
+  --output-dir TEXT     Destination directory for rag tests  [required]
+  --help                Show this message and exit.
+
+Commands:
+  rag     Run the required models using rag dataset Example of models:...
+  report  Open a qa_retrival prediction csv, and for every model compute...
