@@ -24,4 +24,4 @@ jobs:
     - name: Analysing the code with pylint
       run: |
         cd examiner
-        poetry run pylint $(git ls-files '*.py')
+        poetry run pylint  --max-locals 12 $(git ls-files '*.py')
