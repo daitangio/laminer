@@ -1,4 +1,9 @@
 #!/usr/bin/env python
+
+from datetime import datetime
+import click
+import re
+
 import pandas as pd
 from tqdm import tqdm
 from langchain.chains import RetrievalQA
@@ -11,11 +16,9 @@ from langchain.prompts import PromptTemplate
 from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser
 from langchain.vectorstores.utils import filter_complex_metadata
-import click
-import re
 
-from datetime import datetime
-def buildFilePrefix():
+
+def build_file_prefix():
     today = datetime.today().date()
     formatted_date = today.strftime('%Y-%m-%d')
     return formatted_date
@@ -57,7 +60,7 @@ def test_local_retrieval_qa(model: str, df: pd.DataFrame, retriever: any):
                         | llm
                         | StrOutputParser())        
     predictions = []
-    for it, row in tqdm(df.iterrows(), total=len(df)):
+    for _it, row in tqdm(df.iterrows(), total=len(df)):
         # print("Processing {} {}".format(it, row["question"]))
         print("Context:",retriever.invoke(row["question"]))
         resp = chain.invoke(row["question"])
@@ -96,7 +99,7 @@ def rag(data_model: DataModel,models):
     """
     # Super prod list ( "mistral-openorca:7b", "mistral:7b","llama2:7b","gemma:2b", "zephyr", "orca-ini", "phi"  )
     # GG At the moment llama3 presnet a bug in the outuput, it seems unable to understand the prompt. 
-    formatted_date=buildFilePrefix()
+    formatted_date=build_file_prefix()
     dest_dir=f"{data_model.output_dir}/{formatted_date}_qa_retrieval_prediction.csv"
     print(f"Destination report:{dest_dir}")
     for modelName in models:
@@ -112,7 +115,7 @@ def report(data_model: DataModel, qa_file, models):
     Open a qa_retrival prediction csv, and for every model compute results
 
     """
-    prefix=buildFilePrefix()
+    prefix=build_file_prefix()
     report_file=f"{data_model.output_dir}/{prefix}-report.csv"
     print(f"Reporting into {report_file}")
     # TP: Statements that are present in both the answer and the ground truth.
@@ -121,36 +124,36 @@ def report(data_model: DataModel, qa_file, models):
     df = pd.read_csv(qa_file)
     total=len(df)
     print(f"Total questions:{total} Models to check:{len(models)}")
-    precisionList=[]
+    tp_list=[]
     for model in models:
         TP=0.0        
         if data_model.debug_mode:
             print(f"Processing {model}")
         # load question,answer,gemma:2b_result
-        for i,row in df.iterrows():
-            modelAnswer=row[f"{model}_result"]
-            expectedAnswer=str(row["answer"])
+        for _i,row in df.iterrows():
+            model_answer=row[f"{model}_result"]
+            expected_answer=str(row["answer"])
             if data_model.debug_mode:
                 print("Q:",row["question"])                
-                print("\tA:",modelAnswer)
-            if expectedAnswer in modelAnswer:
+                print("\tA:",model_answer)
+            if expected_answer in model_answer:
                 TP=TP+1
             else:
                 # Try harder
-                pattern=re.compile(expectedAnswer)
-                if(pattern.match(modelAnswer)):
+                pattern=re.compile(expected_answer)
+                if pattern.match(model_answer):
                     TP=TP+1
                     if data_model.debug_mode:
                         print("REGEXP MATCH")
                 elif data_model.debug_mode:
-                    print("*FAILED* Expected:", expectedAnswer)
+                    print("*FAILED* Expected:", expected_answer)
         precision= TP/total
         print(f"{model} Precision: {precision}")
-        precisionList.append(precision)
+        tp_list.append(precision)
     
     report_output = pd.DataFrame({
         "model": models,
-        "precision": precisionList 
+        "precision": tp_list 
     })
     report_output.to_csv(report_file, index=False)
 
