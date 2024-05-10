@@ -24,4 +24,4 @@ jobs:
     - name: Analysing the code with pylint
       run: |
         cd examiner
-        pylint $(git ls-files '*.py')
+        poetry run pylint $(git ls-files '*.py')
