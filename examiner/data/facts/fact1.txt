@@ -1,12 +1,7 @@
 This a set of text data 'facts' the RAG system will be use to provide enough context.
 
-About mortailty:
-
-All men are mortals.
-Socrates is a man.
-Giovanni is a man.
 
 
-About Islands:
-Zumpia is a fictional island.
+
+
 

@@ -1,22 +1,26 @@
 #!/usr/bin/env python
 
 from datetime import datetime
-import click
 import re
+import click
 
 import pandas as pd
 from tqdm import tqdm
 from langchain.chains import RetrievalQA
-from langchain.chat_models import ChatOllama
-from langchain.embeddings import HuggingFaceEmbeddings, FastEmbedEmbeddings
-from langchain.vectorstores import Chroma
-from langchain.text_splitter import CharacterTextSplitter, RecursiveCharacterTextSplitter
-from langchain.document_loaders import TextLoader
+
+from langchain_community.chat_models import ChatOllama
+from langchain_community.embeddings import HuggingFaceEmbeddings, FastEmbedEmbeddings
+from langchain_community.vectorstores import Chroma
+from langchain_community.document_loaders import TextLoader
+from langchain_community.document_loaders import DirectoryLoader
+from langchain_community.vectorstores.utils import filter_complex_metadata
+
 from langchain.prompts import PromptTemplate
 from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser
-from langchain.vectorstores.utils import filter_complex_metadata
+from langchain.text_splitter import CharacterTextSplitter, RecursiveCharacterTextSplitter
 
+from langchain.globals import set_debug
 
 def build_file_prefix():
     today = datetime.today().date()
@@ -24,17 +28,19 @@ def build_file_prefix():
     return formatted_date
 
 def create_retriever(question_dir):
-    file_loader = TextLoader(f"{question_dir}/facts/fact1.txt")
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1024, chunk_overlap=100)
-    chunks = text_splitter.split_documents(file_loader.load())
+    # See     
+    dir_loader = DirectoryLoader(f"{question_dir}/facts", glob="**/*.txt", loader_cls=TextLoader)    
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1024, chunk_overlap=100)  
+    docs= dir_loader.load()
+    print(f"Docs#:{len(docs)}")
+    chunks = text_splitter.split_documents(docs)
     chunks = filter_complex_metadata(chunks)
-
     vector_store = Chroma.from_documents(documents=chunks, embedding=FastEmbedEmbeddings())
     retriever = vector_store.as_retriever(
             search_type="similarity_score_threshold",
             search_kwargs={
-                "k": 3,
-                "score_threshold": 0.5,
+                "k": 3,                 # how much rows to extract
+                "score_threshold": 0.4,
             },
         )
     return retriever
@@ -54,7 +60,7 @@ def test_local_retrieval_qa(model: str, df: pd.DataFrame, retriever: any):
 
     llm=ChatOllama(
             base_url="http://localhost:11434",
-            model=model, temperature=0, seed=1)    
+            model=model, temperature=0, seed=1)
     chain = ({"context": retriever, "question": RunnablePassthrough()}
                         | prompt
                         | llm
@@ -62,7 +68,7 @@ def test_local_retrieval_qa(model: str, df: pd.DataFrame, retriever: any):
     predictions = []
     for _it, row in tqdm(df.iterrows(), total=len(df)):
         # print("Processing {} {}".format(it, row["question"]))
-        print("Context:",retriever.invoke(row["question"]))
+        # print("Context:",retriever.invoke(row["question"]))
         resp = chain.invoke(row["question"])
         print(resp)
         predictions.append(resp)
@@ -84,6 +90,8 @@ class DataModel:
 @click.option('--output-dir',  required=True, envvar="LAMINER_OUTPUT_DIR", help="Destination directory for rag tests")
 @click.pass_context
 def cli(ctx,debug, question_dir,output_dir ):
+    if debug:
+        set_debug(True)
     df = pd.read_csv(question_dir+"/questions/test1.csv")
     r=create_retriever(question_dir)    
     ctx.obj=DataModel(df,r,debug,question_dir,output_dir)

@@ -20,7 +20,7 @@ Suppose you have your ollama in a host calld fatlama, proxy it with
 To run some tests and then collect results try
 
     ./examiner/run.py --question-dir ./data --output-dir ./output  rag gemma:2b mistral:7b     
-    ./examiner/run.py  --question-dir ./data --output-dir ./output report output/2024-05-08_qa_retrieval_prediction.csv gemma:2b
+    ./examiner/run.py --question-dir ./data --output-dir ./output report output/2024-05-08_qa_retrieval_prediction.csv gemma:2b
 
 # How to configure expected answer
 
