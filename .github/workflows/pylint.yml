@@ -44,4 +44,4 @@ jobs:
       run: |
         test -d venv && source venv/bin/activate
         cd examiner
-        poetry run pylint  --max-locals 12 $(git ls-files '*.py')
+        poetry run pylint --rcfile=./pylint.rc  $(git ls-files '*.py')

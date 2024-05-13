@@ -1,4 +1,8 @@
 #!/usr/bin/env python
+"""
+Run module is meant to be run as a command line
+"""
+
 
 from datetime import datetime
 import re
@@ -6,10 +10,10 @@ import click
 
 import pandas as pd
 from tqdm import tqdm
-from langchain.chains import RetrievalQA
 
 from langchain_community.chat_models import ChatOllama
-from langchain_community.embeddings import HuggingFaceEmbeddings, FastEmbedEmbeddings
+# Eval also HuggingFaceEmbeddings
+from langchain_community.embeddings import FastEmbedEmbeddings
 from langchain_community.vectorstores import Chroma
 from langchain_community.document_loaders import TextLoader
 from langchain_community.document_loaders import DirectoryLoader
@@ -18,7 +22,7 @@ from langchain_community.vectorstores.utils import filter_complex_metadata
 from langchain.prompts import PromptTemplate
 from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser
-from langchain.text_splitter import CharacterTextSplitter, RecursiveCharacterTextSplitter
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.globals import set_debug
 
 
@@ -84,6 +88,9 @@ def test_local_retrieval_qa(model: str, df: pd.DataFrame, retriever: any):
     return df
 
 class DataModel:
+    """
+    Used to store global settings
+    """
     def __init__(self, df,retriever,debug_mode,question_dir,output_dir):
         self.df=df
         self.retriever=retriever
