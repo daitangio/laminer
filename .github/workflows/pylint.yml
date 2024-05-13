@@ -20,7 +20,7 @@ jobs:
       with:
         path: |
           venv/*
-        key: ${{ runner.os }}-${{ hashFiles('**/pyproject.toml') }}
+        key: ${{ runner.os }}-${{ hashFiles('examiner/pyproject.toml') }}
     - name: Install dependencies      
       if: steps.cache.outputs.cache-hit != 'true'
       run: |
@@ -37,7 +37,7 @@ jobs:
       with:
         path: |
           venv/*
-        key: ${{ runner.os }}-${{ hashFiles('**/pyproject.toml') }}        
+        key: ${{ steps.cache.outputs.cache-primary-key }}
     - name: Analysing the code with pylint
       # to overcome a pylint import error, we try to import it inside poetry
       # evaluate removing it from the dev side
