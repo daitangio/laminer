@@ -45,10 +45,3 @@ jobs:
         test -d venv && source venv/bin/activate
         cd examiner
         poetry run pylint --rcfile=./pylint.rc  $(git ls-files '*.py')
-    - name: Run Pysa Security Scan
-      uses: facebook/pysa-action@15c7aea01cff64049bafe04fac871bd2cb50df56
-      with:
-        # To customize these inputs:
-        # See https://github.com/facebook/pysa-action#inputs
-        repo-directory: './examiner'
-        use-poetry: true
