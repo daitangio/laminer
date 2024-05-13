@@ -15,14 +15,14 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - name: Restore cached env
-      id: venv-cache
+      id: cache
       uses: actions/cache/restore@v4
       with:
         path: |
           venv/*
-        key: ${{ runner.os }}-venv
-    - name: Install dependencies
-      # to overcome a pylint import error, we try to import it inside poetry
+        key: ${{ runner.os }}-${{ hashFiles('**/pyproject.toml') }}
+    - name: Install dependencies      
+      if: steps.cache.outputs.cache-hit != 'true'
       run: |
         python -m pip install --upgrade pip 
         pip install virtualenv
@@ -31,15 +31,17 @@ jobs:
         pip install poetry==1.2.0
         cd examiner
         poetry install
-    - name: Save Venv
+    - name: Save venv
       id: cache-save
       uses: actions/cache/save@v4
       with:
         path: |
           venv/*
-        key: ${{ runner.os }}-venv      
+        key: ${{ runner.os }}-${{ hashFiles('**/pyproject.toml') }}        
     - name: Analysing the code with pylint
+      # to overcome a pylint import error, we try to import it inside poetry
+      # evaluate removing it from the dev side
       run: |
-        source venv/bin/activate
+        test -d venv && source venv/bin/activate
         cd examiner
         poetry run pylint  --max-locals 12 $(git ls-files '*.py')

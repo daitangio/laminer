@@ -23,12 +23,17 @@ from langchain.globals import set_debug
 
 
 def build_file_prefix():
+    """
+    Build a simple date-based-prefix based also on current hour
+    """
     today = datetime.today().date()
-    formatted_date = today.strftime('%Y-%m-%d')
+    formatted_date = today.strftime('%Y-%m-%d-%H')
     return formatted_date
 
 def create_retriever(question_dir):
-    # See
+    """
+    Create a simple RAG retriever based on a set of text facts 
+    """
     dir_loader = DirectoryLoader(f"{question_dir}/facts", glob="**/*.txt", loader_cls=TextLoader)
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1024, chunk_overlap=100)
     docs= dir_loader.load()
@@ -46,6 +51,10 @@ def create_retriever(question_dir):
     return retriever
 
 def test_local_retrieval_qa(model: str, df: pd.DataFrame, retriever: any):
+    """
+        Core "rag" function: for the given model, run the data frame provided and return collected responses
+
+    """
     print(f"Testing model: {model}")
     prompt = PromptTemplate.from_template(
         """
@@ -72,6 +81,7 @@ def test_local_retrieval_qa(model: str, df: pd.DataFrame, retriever: any):
         print(resp)
         predictions.append(resp)
     df[f"{model}_result"] = predictions
+    return df
 
 class DataModel:
     def __init__(self, df,retriever,debug_mode,question_dir,output_dir):
@@ -83,11 +93,21 @@ class DataModel:
 
 
 @click.group()
-@click.option('--debug/--no-debug', default=False)
+@click.option('--debug/--no-debug', default=False,help="Enable lanchian debugger (to spot bugs)")
 @click.option('--question-dir', default="./data", envvar="LAMINER_QUESTION_DIR", help="Data dir containing question sets and rag facts")
 @click.option('--output-dir',  required=True, envvar="LAMINER_OUTPUT_DIR", help="Destination directory for rag tests")
 @click.pass_context
 def cli(ctx,debug, question_dir,output_dir ):
+    """ 
+        Examiner run.py command to run rag or collect reports.   
+
+        Run
+
+            run.py <command> --help 
+        
+        for details on every command.
+        
+    """
     if debug:
         set_debug(True)
     df = pd.read_csv(question_dir+"/questions/test1.csv")
