@@ -1,6 +1,21 @@
 name: Pylint
 
-on: [push]
+# Taken from https://github.com/pallets/click/blob/main/.github/workflows/tests.yaml
+on:
+  push:
+    branches:
+      - master
+      - '*.x'
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+      - '*.rst'
+  pull_request:
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+      - '*.rst'
+
 
 jobs:
   build:
@@ -30,7 +45,7 @@ jobs:
         source venv/bin/activate
         pip install poetry==1.2.0
         cd examiner
-        poetry install
+        poetry install --with dev
     - name: Save venv
       id: cache-save
       uses: actions/cache/save@v4
@@ -39,8 +54,6 @@ jobs:
           venv/*
         key: ${{ steps.cache.outputs.cache-primary-key }}
     - name: Analysing the code with pylint
-      # to overcome a pylint import error, we try to import it inside poetry
-      # evaluate removing it from the dev side
       run: |
         test -d venv && source venv/bin/activate
         cd examiner

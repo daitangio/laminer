@@ -16,9 +16,10 @@ pandas = "^2.2.2"
 sentence-transformers = "^2.7.0"
 faiss-cpu = "^1.8.0"
 click = "^8.1.7"
-pylint = "^3.1.0"
 langchain-community = "^0.0.38"
 
+[tool.poetry.group.dev.dependencies]
+pylint="^3.1.0"
 
 [build-system]
 requires = ["poetry-core"]

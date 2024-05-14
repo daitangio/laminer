@@ -9,6 +9,7 @@ Create a virtualenv and install poetry
     virtualenv venv
     source venv/bin/activate
     pip install poetry==1.2.0
+    cd examiner ; poetry install --with dev
 
 Then use poetry to install examiner dependencies
 
@@ -32,3 +33,4 @@ Expected answer can be regexp
 # Major references
 
 1) https://medium.com/@vndee.huynh/how-to-effectively-evaluate-your-rag-llm-applications-2139e2d2c7a4
+2) Read about poetry package managere here: https://python-poetry.org/docs/
