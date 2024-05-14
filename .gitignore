@@ -160,5 +160,5 @@ cython_debug/
 #.idea/
 venv
 laminer.code-workspace
-examiner/output/qa_retrieval_prediction.csv
-examiner/output/*.csv
+output/qa_retrieval_prediction.csv
+output/*.csv

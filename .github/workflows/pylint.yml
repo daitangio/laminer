@@ -5,7 +5,7 @@ on:
   push:
     branches:
       - master
-      - '*.x'
+      - 'feature/*'
     paths-ignore:
       - 'docs/**'
       - '*.md'
@@ -35,7 +35,7 @@ jobs:
       with:
         path: |
           venv/*
-        key: ${{ runner.os }}-${{ hashFiles('examiner/pyproject.toml') }}
+        key: ${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
     - name: Install dependencies
       if: steps.cache.outputs.cache-hit != 'true'
       run: |
@@ -43,8 +43,7 @@ jobs:
         pip install virtualenv
         test -d venv || virtualenv venv
         source venv/bin/activate
-        pip install poetry==1.2.0
-        cd examiner
+        pip install poetry==1.2.0        
         poetry install --with dev
     - name: Save venv
       id: cache-save
@@ -55,6 +54,5 @@ jobs:
         key: ${{ steps.cache.outputs.cache-primary-key }}
     - name: Analysing the code with pylint
       run: |
-        test -d venv && source venv/bin/activate
-        cd examiner
+        test -d venv && source venv/bin/activate        
         poetry run pylint --rcfile=./pylint.rc  $(git ls-files '*.py')
