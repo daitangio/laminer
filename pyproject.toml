@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "examiner"
+name = "laminer"
 version = "0.1.0"
 description = ""
 authors = ["Giovanni Giorgi <jj@gioorgi.com>"]
