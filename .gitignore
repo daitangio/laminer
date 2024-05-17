@@ -162,3 +162,7 @@ venv
 laminer.code-workspace
 output/qa_retrieval_prediction.csv
 output/*.csv
+# TEMP
+data.tar
+Esempio*
+data-cobol*

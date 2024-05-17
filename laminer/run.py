@@ -6,11 +6,11 @@ Run module is meant to be run as a command line
 
 from datetime import datetime
 import re
-import click
+import glob
 
+import click
 import pandas as pd
 from tqdm import tqdm
-
 from langchain_community.chat_models import ChatOllama
 # Eval also HuggingFaceEmbeddings
 from langchain_community.embeddings import FastEmbedEmbeddings
@@ -24,15 +24,9 @@ from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.globals import set_debug
+from laminer.util import build_file_prefix
 
 
-def build_file_prefix():
-    """
-    Build a simple date-based-prefix based also on current hour
-    """
-    today = datetime.today().date()
-    formatted_date = today.strftime('%Y-%m-%d-%H')
-    return formatted_date
 
 def create_retriever(question_dir):
     """
@@ -106,18 +100,24 @@ class DataModel:
 @click.pass_context
 def cli(ctx,debug, question_dir,output_dir ):
     """ 
-        Examiner run.py command to run rag or collect reports.   
+        Examiner command to run rag or collect reports.
 
         Run
 
-            run.py <command> --help 
+            run.sh <command> --help 
         
         for details on every command.
         
     """
     if debug:
         set_debug(True)
-    df = pd.read_csv(question_dir+"/questions/test1.csv")
+    # Scan questions...
+    dfs = []
+    for filename in glob.glob(f"{question_dir}/questions/*.csv"):
+        if debug:
+            print(f"Loading {filename}")
+        dfs.append(pd.read_csv(filename))    
+    df = pd.concat(dfs, ignore_index=True)        
     r=create_retriever(question_dir)
     ctx.obj=DataModel(df,r,debug,question_dir,output_dir)
 

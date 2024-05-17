@@ -1,6 +1,8 @@
 ---
 name: Feature request
 about: Suggest a new feature for Laminer
+labels: FeatureRequest
+assignees: ''
 ---
 
 <!--

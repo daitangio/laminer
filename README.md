@@ -25,8 +25,8 @@ Suppose you have your ollama in a host calld fatlama, proxy it with
 
 To run some tests and then collect results try
 
-    ./laminer/run.py --question-dir ./data --output-dir ./output  rag gemma:2b mistral:7b     
-    ./laminer/run.py --question-dir ./data --output-dir ./output report output/2024-05-08_qa_retrieval_prediction.csv gemma:2b
+    ./run.sh --question-dir ./data --output-dir ./output    rag gemma:2b mistral:7b
+    ./run.sh --question-dir ./data --output-dir ./output report output/2024-05-08_qa_retrieval_prediction.csv gemma:2b
 
 # How to configure expected answer (WIP)
 
@@ -36,10 +36,17 @@ Expected answer can be regexp
 # TODO
 
 [ ] Implement new 'simple' command for non-RAG flows (simple QA)
-[ ] Review MMMLU https://github.com/hendrycks/test?tab=readme-ov-file#measuring-massive-multitask-language-understanding and consider integrating it
-[ ] Add contribution.rst and issue template
+    based on small cobol translations
+
 [ ] Provide more usage examples, and tutorial based on langchain:
     https://python.langchain.com/v0.1/docs/get_started/quickstart/
+
+[ ] Review MMMLU https://github.com/hendrycks/test?tab=readme-ov-file#measuring-massive-multitask-language-understanding 
+    and consider integrating it
+    with a specific command
+[ ] Add contribution.rst and issue template
+
+
 
 # Major references
 
