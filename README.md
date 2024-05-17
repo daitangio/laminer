@@ -33,6 +33,14 @@ To run some tests and then collect results try
 Expected answer can be regexp
 
 
+# TODO
+
+[ ] Implement new 'simple' command for non-RAG flows (simple QA)
+[ ] Review MMMLU https://github.com/hendrycks/test?tab=readme-ov-file#measuring-massive-multitask-language-understanding and consider integrating it
+[ ] Add contribution.rst and issue template
+[ ] Provide more usage examples, and tutorial based on langchain:
+    https://python.langchain.com/v0.1/docs/get_started/quickstart/
+
 # Major references
 
 1) https://medium.com/@vndee.huynh/how-to-effectively-evaluate-your-rag-llm-applications-2139e2d2c7a4
