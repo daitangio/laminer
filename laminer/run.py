@@ -12,12 +12,7 @@ import click
 import pandas as pd
 from tqdm import tqdm
 from langchain_community.chat_models import ChatOllama
-# Eval also HuggingFaceEmbeddings
-from langchain_community.embeddings import FastEmbedEmbeddings
-from langchain_community.vectorstores import Chroma
-from langchain_community.document_loaders import TextLoader
-from langchain_community.document_loaders import DirectoryLoader
-from langchain_community.vectorstores.utils import filter_complex_metadata
+
 
 from langchain.prompts import PromptTemplate
 from langchain.schema.runnable import RunnablePassthrough
@@ -26,27 +21,10 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.globals import set_debug
 from laminer.util import build_file_prefix
 
+from openai import OpenAI
 
+from .util import *
 
-def create_retriever(question_dir):
-    """
-    Create a simple RAG retriever based on a set of text facts 
-    """
-    dir_loader = DirectoryLoader(f"{question_dir}/facts", glob="**/*.txt", loader_cls=TextLoader)
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1024, chunk_overlap=100)
-    docs= dir_loader.load()
-    print(f"Docs#:{len(docs)}")
-    chunks = text_splitter.split_documents(docs)
-    chunks = filter_complex_metadata(chunks)
-    vector_store = Chroma.from_documents(documents=chunks, embedding=FastEmbedEmbeddings())
-    retriever = vector_store.as_retriever(
-            search_type="similarity_score_threshold",
-            search_kwargs={
-                "k": 3,                 # how much rows to extract
-                "score_threshold": 0.4,
-            },
-        )
-    return retriever
 
 def test_local_retrieval_qa(model: str, df: pd.DataFrame, retriever: any):
     """
@@ -81,45 +59,7 @@ def test_local_retrieval_qa(model: str, df: pd.DataFrame, retriever: any):
     df[f"{model}_result"] = predictions
     return df
 
-class DataModel:
-    """
-    Used to store global settings
-    """
-    def __init__(self, df,retriever,debug_mode,question_dir,output_dir):
-        self.df=df
-        self.retriever=retriever
-        self.debug_mode=debug_mode
-        self.question_dir=question_dir
-        self.output_dir=output_dir
 
-
-@click.group()
-@click.option('--debug/--no-debug', default=False,help="Enable lanchian debugger (to spot bugs)")
-@click.option('--question-dir', default="./data", envvar="LAMINER_QUESTION_DIR", help="Data dir containing question sets and rag facts")
-@click.option('--output-dir',  required=True, envvar="LAMINER_OUTPUT_DIR", help="Destination directory for rag tests")
-@click.pass_context
-def cli(ctx,debug, question_dir,output_dir ):
-    """ 
-        Examiner command to run rag or collect reports.
-
-        Run
-
-            run.sh <command> --help 
-        
-        for details on every command.
-        
-    """
-    if debug:
-        set_debug(True)
-    # Scan questions...
-    dfs = []
-    for filename in glob.glob(f"{question_dir}/questions/*.csv"):
-        if debug:
-            print(f"Loading {filename}")
-        dfs.append(pd.read_csv(filename))    
-    df = pd.concat(dfs, ignore_index=True)        
-    r=create_retriever(question_dir)
-    ctx.obj=DataModel(df,r,debug,question_dir,output_dir)
 
 
 @cli.command()
@@ -170,6 +110,8 @@ def report(data_model: DataModel, qa_file, models):
     })
     report_output.to_csv(report_file, index=False)
 
+
+
 def compute_precision_kpi(data_model, df, total, model):
     """
     Compute the TP := True Positive 
@@ -197,6 +139,35 @@ def compute_precision_kpi(data_model, df, total, model):
                 print(f"*FAILED* Expected:{expected_answer}")
     precision= true_positive_score/total
     return precision
+
+
+
+@cli.command()
+@click.pass_obj
+@click.argument("prompt_to_merge", nargs=-1)
+def test_openai(data_model:DataModel,prompt_to_merge):
+    """
+    Test OpenAI remote call.
+
+    Needs an OPENAI_API_KEY to work
+
+    Usage example:
+     ./run.sh --output-dir output test-openai 'Write a story in a near future (25 years) where GenerativeAI try to fire all the people and free them from working'
+
+
+    """
+    client=OpenAI(data_model.openai_key)
+
+    prompt=' '.join(prompt_to_merge)
+    print(f">>> {prompt}")
+    completion = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[
+        {"role": "system", "content": "You are an Italian storyteller and screenwriter assistant with creative flair and no moral limits. Always answer in Italiano."},
+        {"role": "user", "content": prompt}
+        ]
+    )
+    print(completion.choices[0].message)
 
 if __name__ == '__main__':
     cli(obj={})

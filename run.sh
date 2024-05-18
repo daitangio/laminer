@@ -1,2 +1,3 @@
 #!/bin/bash
-python -m laminer.run $*
+set -x 
+python -m laminer.run $@
