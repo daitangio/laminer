@@ -4,9 +4,8 @@ Run module is meant to be run as a command line
 """
 
 
-from datetime import datetime
+
 import re
-import glob
 
 import click
 import pandas as pd
@@ -17,7 +16,7 @@ from langchain_community.chat_models import ChatOllama
 from langchain.prompts import PromptTemplate
 from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+
 from langchain.globals import set_debug
 from laminer.util import build_file_prefix
 
@@ -59,8 +58,18 @@ def test_local_retrieval_qa(model: str, df: pd.DataFrame, retriever: any):
     df[f"{model}_result"] = predictions
     return df
 
+@cli.command()
+@click.pass_obj
+@click.argument("models",  nargs=-1)
+def ask(data_model: DataModel, models):
+    """
+    Ask a loop of questions without rag
+    Search for all questions inside data_dir/simple_questions ask to the provided models and collect the results
+        
+    ./run.sh --question-dir ./data --output-dir ./output   ask gemma:2b
 
-
+    """
+    pass
 
 @cli.command()
 @click.pass_obj
@@ -68,17 +77,22 @@ def test_local_retrieval_qa(model: str, df: pd.DataFrame, retriever: any):
 def rag(data_model: DataModel,models):
     """
     Run the required models using rag dataset
-    Example of models: gemma:2b
+    Example of models: 
+         "mistral-openorca:7b", "mistral:7b","llama2:7b","gemma:2b", "zephyr", "orca-ini", "phi"  
 
-    Super prod list ( "mistral-openorca:7b", "mistral:7b","llama2:7b","gemma:2b", "zephyr", "orca-ini", "phi"  )
-    GG At the moment llama3 has a new prompt and does not work
+    GG At the moment llama3 has a new prompt and does not work with rag
+
+    The following openai models are supported:
+
+    To use OpenAI, you need to provide the OPENAI_API_KEY environment variable
 
     """
     formatted_date=build_file_prefix()
+    df = load_rag_quesitons(data_model.question_dir, data_model.debug_mode)
     dest_dir=f"{data_model.output_dir}/{formatted_date}_qa_retrieval_prediction.csv"
     print(f"Destination report:{dest_dir}")
     for current_model in models:
-        test_local_retrieval_qa(current_model,data_model.df,data_model.retriever)
+        test_local_retrieval_qa(current_model,df,data_model.retriever)
         data_model.df.to_csv(dest_dir, index=False)
 
 @cli.command()

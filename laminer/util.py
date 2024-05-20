@@ -1,3 +1,8 @@
+
+from datetime import datetime
+import glob
+import pandas as pd
+
 import click
 from langchain.globals import set_debug
 # Eval also HuggingFaceEmbeddings
@@ -6,6 +11,7 @@ from langchain_community.vectorstores import Chroma
 from langchain_community.document_loaders import TextLoader
 from langchain_community.document_loaders import DirectoryLoader
 from langchain_community.vectorstores.utils import filter_complex_metadata
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 def build_file_prefix():
     """
@@ -19,8 +25,7 @@ class DataModel:
     """
     Used to store global settings
     """
-    def __init__(self, df,retriever,debug_mode,question_dir,output_dir,openai_key):
-        self.df=df
+    def __init__(self, retriever,debug_mode,question_dir,output_dir,openai_key):
         self.retriever=retriever
         self.debug_mode=debug_mode
         self.question_dir=question_dir
@@ -47,6 +52,16 @@ def create_retriever(question_dir):
         )
     return retriever
 
+def load_rag_quesitons(question_dir,debug):
+    # Scan questions...
+    dfs = []
+    for filename in glob.glob(f"{question_dir}/questions/*.csv"):
+        if debug:
+            print(f"Loading {filename}")
+        dfs.append(pd.read_csv(filename))
+    df = pd.concat(dfs, ignore_index=True)        
+    return df
+
 
 @click.group()
 @click.option('--debug/--no-debug', default=False,help="Enable lanchian debugger (to spot bugs)")
@@ -67,13 +82,6 @@ def cli(ctx,debug, question_dir,output_dir,openai_key ):
     """
     if debug:
         set_debug(True)
-    # Scan questions...
-    dfs = []
-    for filename in glob.glob(f"{question_dir}/questions/*.csv"):
-        if debug:
-            print(f"Loading {filename}")
-        dfs.append(pd.read_csv(filename))    
-    df = pd.concat(dfs, ignore_index=True)        
     r=create_retriever(question_dir)
-    ctx.obj=DataModel(df,r,debug,question_dir,output_dir,openai_key)
+    ctx.obj=DataModel(r,debug,question_dir,output_dir,openai_key)
 
