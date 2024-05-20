@@ -1,17 +1,20 @@
-
+"""
+    Util module collects the low-level functions with little digity to have their ouwn module
+"""
 from datetime import datetime
 import glob
 import pandas as pd
 
 import click
 from langchain.globals import set_debug
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 # Eval also HuggingFaceEmbeddings
 from langchain_community.embeddings import FastEmbedEmbeddings
 from langchain_community.vectorstores import Chroma
 from langchain_community.document_loaders import TextLoader
 from langchain_community.document_loaders import DirectoryLoader
 from langchain_community.vectorstores.utils import filter_complex_metadata
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+
 
 def build_file_prefix():
     """
