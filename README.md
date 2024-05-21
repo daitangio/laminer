@@ -9,8 +9,7 @@ It can test rag sets on a provided dataset.
 # Getting started
 Create a virtualenv and install poetry:
 
-    virtualenv venv
-    source venv/bin/activate
+    virtualenv venv && source venv/bin/activate
     pip install poetry==1.2.0
     poetry install --with dev
 
