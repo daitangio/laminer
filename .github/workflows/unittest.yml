@@ -35,7 +35,7 @@ jobs:
       with:
         path: |
           venv/*
-        key: ${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
+        key: ${{ runner.os }}-${{ hashFiles('poetry.lock','pyproject.toml') }}
     - name: Install dependencies
       if: steps.cache.outputs.cache-hit != 'true'
       run: |
