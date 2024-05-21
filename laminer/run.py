@@ -17,12 +17,11 @@ from langchain.prompts import PromptTemplate
 from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser
 
-from langchain.globals import set_debug
-from laminer.util import build_file_prefix
+from laminer.util import build_file_prefix,cli,load_rag_quesitons, DataModel 
 
 from openai import OpenAI
 
-from .util import *
+
 
 
 def test_local_retrieval_qa(model: str, df: pd.DataFrame, retriever: any):

@@ -1,4 +1,4 @@
-name: Pylint
+name: JUnit_Pylint
 
 # Taken from https://github.com/pallets/click/blob/main/.github/workflows/tests.yaml
 on:
@@ -52,6 +52,10 @@ jobs:
         path: |
           venv/*
         key: ${{ steps.cache.outputs.cache-primary-key }}
+    - name: Run Unit_tests
+      run: |
+        test -d venv && source venv/bin/activate  
+        python -m unittest discover -v
     - name: Analysing the code with pylint
       run: |
         test -d venv && source venv/bin/activate        
