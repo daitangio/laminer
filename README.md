@@ -1,9 +1,10 @@
 # Laminer
 lama-examiner (Laminer) is a simple code to test GenAI Large Language model precision based on a corpus of tests.
 
-It can test
+It can test rag sets on a provided dataset.
 
-[![Pylint](https://github.com/daitangio/laminer/actions/workflows/pylint.yml/badge.svg)](https://github.com/daitangio/laminer/actions/workflows/pylint.yml)
+
+[![JUnit_Pylint](https://github.com/daitangio/laminer/actions/workflows/unittest.yml/badge.svg)](https://github.com/daitangio/laminer/actions/workflows/unittest.yml)
 
 # Getting started
 Create a virtualenv and install poetry:
@@ -14,6 +15,7 @@ Create a virtualenv and install poetry:
     poetry install --with dev
 
 After, you need an ollama instance. You can use the runOllamaServer.sh script to run it via docker.
+Otherwise you can use a proxed instance
 
 ## Proxed Ollama
 Suppose you have your ollama in a host calld fatlama, proxy it with
