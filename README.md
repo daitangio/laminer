@@ -34,7 +34,7 @@ To run some tests and then collect results try
 Expected answer can be regexp
 
 
-# TODO
+## TODOs
 
 [ ] Implement new 'simple' command for non-RAG flows (simple QA)
     based on small cobol translations
@@ -47,6 +47,7 @@ Expected answer can be regexp
     with a specific command
 [ ] Add contribution.rst and issue template
 
+[ ] Include a test example based on phi3
 
 
 # Major references
