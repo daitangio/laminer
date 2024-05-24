@@ -55,3 +55,7 @@ Expected answer can be regexp
 1) https://medium.com/@vndee.huynh/how-to-effectively-evaluate-your-rag-llm-applications-2139e2d2c7a4
 2) Read about poetry package managere here: https://python-poetry.org/docs/
 3) Tox https://tox.wiki/en/4.15.0/
+
+# Other tools
+
+1) [Flowise](https://github.com/FlowiseAI/Flowise) 
