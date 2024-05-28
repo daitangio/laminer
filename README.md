@@ -29,6 +29,12 @@ To run some tests and then collect results try
     ./run.sh --question-dir ./data --output-dir ./output    rag gemma:2b mistral:7b
     ./run.sh --question-dir ./data --output-dir ./output report output/2024-05-08_qa_retrieval_prediction.csv gemma:2b
 
+## Hugging face integration example
+
+    export HUGGINGFACEHUB_ENABLED=yes
+    export HUGGINGFACEHUB_API_TOKEN=<yourtokenapi>
+    ./run.sh --output-dir output/  rag  mistralai/Mistral-7B-Instruct-v0.3
+
 # How to configure expected answer (WIP)
 
 Expected answer can be regexp
