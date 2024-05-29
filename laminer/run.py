@@ -3,23 +3,22 @@
 Run module is meant to be run as a command line
 """
 
-
-import re
+import re,os
 
 import click
 import pandas as pd
 from tqdm import tqdm
-from langchain_community.chat_models import ChatOllama
-
 
 from langchain.prompts import PromptTemplate
 from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser
-
-from laminer.util import build_file_prefix, cli, load_rag_quesitons, DataModel
+from langchain_core.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
+from langchain_community.chat_models import ChatOllama
+from langchain_community.llms import HuggingFaceEndpoint
 
 from openai import OpenAI
 
+from laminer.util import build_file_prefix, cli, load_rag_quesitons, DataModel
 
 def test_local_retrieval_qa(model: str, df: pd.DataFrame, retriever: any):
     """
@@ -37,9 +36,26 @@ def test_local_retrieval_qa(model: str, df: pd.DataFrame, retriever: any):
         Answer: [/INST]
         """
     )
-    llm = ChatOllama(
-        base_url="http://localhost:11434", model=model, temperature=0, seed=1
-    )
+    if os.environ["HUGGINGFACEHUB_ENABLED"]:
+        ## Example
+        # repo_id='mistralai/Mistral-7B-Instruct-v0.3'
+        llm = HuggingFaceEndpoint(repo_id=model,
+            seed=1,
+            temperature=0,
+            huggingfacehub_api_token = os.environ["HUGGINGFACEHUB_API_TOKEN"],
+            #max_new_tokens=512,
+            #top_k=10,
+            #top_p=0.95,
+            #typical_p=0.95,
+            #callbacks=[StreamingStdOutCallbackHandler()],
+            #repetition_penalty=1.03,
+            #streaming=True,
+        )
+    else:
+        llm = ChatOllama(
+            base_url="http://localhost:11434", model=model, temperature=0, seed=1
+        )
+
     chain = (
         {"context": retriever, "question": RunnablePassthrough()}
         | prompt
@@ -167,7 +183,6 @@ def test_openai(data_model: DataModel, prompt_to_merge):
 
     """
     client = OpenAI(data_model.openai_key)
-
     prompt = " ".join(prompt_to_merge)
     print(f">>> {prompt}")
     completion = client.chat.completions.create(
