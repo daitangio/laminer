@@ -1902,6 +1902,14 @@ doc = ["reno", "sphinx"]
 test = ["pytest", "tornado (>=4.5)", "typeguard"]
 
 [[package]]
+name = "terminaltexteffects"
+version = "0.10.0"
+description = "A collection of visual effects that can be applied to terminal piped stdin text."
+category = "main"
+optional = false
+python-versions = "<4.0,>=3.8"
+
+[[package]]
 name = "threadpoolctl"
 version = "3.5.0"
 description = "threadpoolctl"
@@ -2249,7 +2257,7 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "jaraco.test", "more
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.9,<3.9.7 || >3.9.7,<3.12"
-content-hash = "a1a857f25a6cc5f385922f3f6da23950e80ad2b51ede9406470caca6fc0a04d2"
+content-hash = "acfa1f1f67c4a854a2e8f40117ddc6efadee16ad6df070b6f49f10a5a5a2b3b1"
 
 [metadata.files]
 aiohttp = [
@@ -4163,6 +4171,10 @@ tbb = [
 tenacity = [
     {file = "tenacity-8.3.0-py3-none-any.whl", hash = "sha256:3649f6443dbc0d9b01b9d8020a9c4ec7a1ff5f6f3c6c8a036ef371f573fe9185"},
     {file = "tenacity-8.3.0.tar.gz", hash = "sha256:953d4e6ad24357bceffbc9707bc74349aca9d245f68eb65419cf0c249a1949a2"},
+]
+terminaltexteffects = [
+    {file = "terminaltexteffects-0.10.0-py3-none-any.whl", hash = "sha256:f3190e13c682ee22f992daf3632405a2c00394e32ffb8c2b7003bf0243d95c33"},
+    {file = "terminaltexteffects-0.10.0.tar.gz", hash = "sha256:f03b3ae0e094b3d641d972507796024add7fbdfd3eb4af653215afec78213c6b"},
 ]
 threadpoolctl = [
     {file = "threadpoolctl-3.5.0-py3-none-any.whl", hash = "sha256:56c1e26c150397e58c4926da8eeee87533b1e32bef131bd4bf6a2f45f3185467"},
