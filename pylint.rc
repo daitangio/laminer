@@ -438,9 +438,10 @@ disable=raw-checker-failed,
         too-few-public-methods,
         too-many-arguments,
         missing-module-docstring,
-        # GG resee
+        # GG To remove before  big-bang releases:
+        # missing-class-docstring,missing-function-docstring,
         too-many-function-args,
-        multiple-imports
+        multiple-imports,
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option

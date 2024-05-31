@@ -36,7 +36,7 @@ def test_local_retrieval_qa(model: str, df: pd.DataFrame, retriever: any):
         Answer: [/INST]
         """
     )
-    if os.environ["HUGGINGFACEHUB_ENABLED"]:
+    if os.environ.get("HUGGINGFACEHUB_ENABLED",None):
         ## Example
         # repo_id='mistralai/Mistral-7B-Instruct-v0.3'
         llm = HuggingFaceEndpoint(repo_id=model,
@@ -109,7 +109,7 @@ def rag(data_model: DataModel, models):
     print(f"Destination report:{dest_dir}")
     for current_model in models:
         test_local_retrieval_qa(current_model, df, data_model.retriever)
-        data_model.df.to_csv(dest_dir, index=False)
+        df.to_csv(dest_dir, index=False)
 
 
 @cli.command()

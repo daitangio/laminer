@@ -29,11 +29,19 @@ To run some tests and then collect results try
     ./run.sh --question-dir ./data --output-dir ./output    rag gemma:2b mistral:7b
     ./run.sh --question-dir ./data --output-dir ./output report output/2024-05-08_qa_retrieval_prediction.csv gemma:2b
 
-## Hugging face integration example
+## Hugging face integration example (alpha stage)
+
+The integration needs you specify the correct hugging-face model, for instance:
 
     export HUGGINGFACEHUB_ENABLED=yes
     export HUGGINGFACEHUB_API_TOKEN=<yourtokenapi>
     ./run.sh --output-dir output/  rag  mistralai/Mistral-7B-Instruct-v0.3
+
+# Demo data
+## RAG and Cobol translation
+
+     ./run.sh --debug --question-dir data-cobol  rag phi3
+
 
 # How to configure expected answer (WIP)
 

@@ -89,6 +89,7 @@ def load_rag_quesitons(question_dir, debug):
 @click.option(
     "--output-dir",
     required=True,
+    default="output",
     envvar="LAMINER_OUTPUT_DIR",
     help="Destination directory for rag tests",
 )
