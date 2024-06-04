@@ -1,0 +1,6 @@
+#!/bin/bash
+
+poetry install
+bin/runOllamaServer
+docker exec -it ollama ollama pull gemma:2b
+poetry run ./run.sh --question-dir ./data --output-dir ./output    rag gemma:2b

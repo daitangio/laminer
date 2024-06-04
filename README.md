@@ -29,6 +29,15 @@ To run some tests and then collect results try
     ./run.sh --question-dir ./data --output-dir ./output    rag gemma:2b mistral:7b
     ./run.sh --question-dir ./data --output-dir ./output report output/2024-05-08_qa_retrieval_prediction.csv gemma:2b
 
+## Code spaces
+
+GitHub code spaces is supported, with a specific devcontainer.  
+After running the code space take a look at the bin/codeSpaceBootstrap script to have a look on how to get started
+
+
+
+
+
 ## Hugging face integration example (alpha stage)
 
 The integration needs you specify the correct hugging-face model, for instance:
