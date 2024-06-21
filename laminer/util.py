@@ -65,14 +65,23 @@ def create_retriever(question_dir):
     return retriever
 
 
+def load_file(file_name:str):
+    with open(file_name, 'r') as file:
+        # Read the entire content of the file into a string
+        file_content = file.read()    
+    return file_content;
+
 def load_rag_quesitons(question_dir, debug):
-    # Scan questions...
-    dfs = []
-    for filename in glob.glob(f"{question_dir}/questions/*.csv"):
+    # Scan questions...    
+    pair ={ "question":[], "answer":[] }
+    for filename in glob.glob(f"{question_dir}/questions/*.txt"):
         if debug:
             print(f"Loading {filename}")
-        dfs.append(pd.read_csv(filename))
-    df = pd.concat(dfs, ignore_index=True)
+        question=load_file(filename)
+        answer=load_file(filename.replace("/questions/","/answers/"))
+        pair["question"].append( question)
+        pair["answer"].append(answer)                
+    df = pd.DataFrame(pair)
     return df
 
 

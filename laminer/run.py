@@ -53,7 +53,7 @@ def test_local_retrieval_qa(model: str, df: pd.DataFrame, retriever: any):
         )
     else:
         llm = ChatOllama(
-            base_url="http://localhost:11434", model=model, temperature=0, seed=1
+            base_url="http://localhost:11434", model=model, temperature=0.8, seed=1
         )
 
     chain = (
@@ -68,7 +68,7 @@ def test_local_retrieval_qa(model: str, df: pd.DataFrame, retriever: any):
         # print("Context:",retriever.invoke(row["question"]))
         resp = chain.invoke(row["question"])
         print(resp)
-        predictions.append(resp)
+        predictions.append(resp)    
     df[f"{model}_result"] = predictions
     return df
 
@@ -105,11 +105,12 @@ def rag(data_model: DataModel, models):
     """
     formatted_date = build_file_prefix()
     df = load_rag_quesitons(data_model.question_dir, data_model.debug_mode)
-    dest_dir = f"{data_model.output_dir}/{formatted_date}_qa_retrieval_prediction.csv"
-    print(f"Destination report:{dest_dir}")
+    dest_file = f"{data_model.output_dir}/{formatted_date}_qa_retrieval_prediction.xlsx"
+    print(f"Destination report:{dest_file}")
     for current_model in models:
         test_local_retrieval_qa(current_model, df, data_model.retriever)
-        df.to_csv(dest_dir, index=False)
+    df.to_excel(dest_file, index=False)
+    df.to_csv(dest_file.replace("xlsx","csv"), index=False)
 
 
 @cli.command()

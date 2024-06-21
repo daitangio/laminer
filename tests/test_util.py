@@ -15,3 +15,7 @@ class BasicTest(unittest.TestCase):
         s = laminer.util.build_file_prefix()
         # print(f"{s}")
         self.assertFalse("00" in s)
+
+    def test_load(self):
+        df=laminer.util.load_rag_quesitons("data-cobol",True)
+        print(df)

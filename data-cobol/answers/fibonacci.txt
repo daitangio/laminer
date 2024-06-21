@@ -1,0 +1,51 @@
+import java.util.Scanner;
+
+public class FIB {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter N to generate the Fibonacci sequence: ");
+        int n = scanner.nextInt();
+        if (n > 92) {
+            invalidN(n);
+        } else if (n > 2) {
+            caseGreatestThan2(n);
+        } else if (n == 2) {
+            case2();
+        } else if (n == 1) {
+            case1();
+        } else if (n == 0) {
+            case0();
+        }
+    }
+
+    public static void case0() {
+        int result = 0;
+        System.out.println(result);
+    }
+
+    public static void case1() {
+        case0();
+        int result = 1;
+        System.out.println(result);
+    }
+
+    public static void case2() {
+        case1();
+        int result = 1;
+        System.out.println(result);
+    }
+
+    public static void caseGreatestThan2(int n) {
+        int i = 1, swap = 1, result = 0;
+        for (; i <= n; i++) {
+            int temp = result;
+            result = swap + result;
+            swap = temp;
+            System.out.println(result);
+        }
+    }
+
+    public static void invalidN(int n) {
+        System.out.println("Invalid N value. The program will now end.");
+    }
+}

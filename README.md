@@ -40,7 +40,7 @@ The integration needs you specify the correct hugging-face model, for instance:
 # Demo data
 ## RAG and Cobol translation
 
-     ./run.sh --debug --question-dir data-cobol  rag phi3
+     ./run.sh --debug --question-dir data-cobol rag  gemma:2b phi3 llama3:8b     
 
 
 # How to configure expected answer (WIP)

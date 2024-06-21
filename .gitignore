@@ -162,4 +162,6 @@ venv
 laminer.code-workspace
 output/qa_retrieval_prediction.csv
 output/*.csv
+output/*.xlsx
 *key*
+data.tar
