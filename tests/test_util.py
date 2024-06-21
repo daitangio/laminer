@@ -18,4 +18,3 @@ class BasicTest(unittest.TestCase):
 
     def test_load(self):
         df=laminer.util.load_rag_quesitons("data-cobol",True)
-        print(df)

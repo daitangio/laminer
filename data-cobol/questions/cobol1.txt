@@ -1,4 +1,4 @@
-Please translate this code from COBOL to Java:
+Translate this code from COBOL to Java:
 IDENTIFICATION DIVISION.
 PROGRAM-ID. HELLO.
 DATA DIVISION.
