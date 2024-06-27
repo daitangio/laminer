@@ -67,7 +67,7 @@ def test_local_retrieval_qa(model: str, df: pd.DataFrame, retriever: any):
         # print("Processing {} {}".format(it, row["question"]))
         # print("Context:",retriever.invoke(row["question"]))
         resp = chain.invoke(row["question"])
-        print(resp)
+        # print(resp)
         predictions.append(resp)    
     df[f"{model}_result"] = predictions
     return df

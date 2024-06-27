@@ -22,7 +22,12 @@ Suppose you have your ollama in a host calld fatlama, proxy it with
     ssh -L 11434:127.0.0.1:11434 -N -f fatlama
 
 
-# Command examples
+# Command examples and demo data
+## RAG and Cobol translation
+
+    ./run.sh --debug --question-dir data-cobol rag  gemma:2b phi3 mistral:7b llama3:8b  codellama:latest    
+
+## Other (WIP)
 
 To run some tests and then collect results try
 
@@ -37,10 +42,6 @@ The integration needs you specify the correct hugging-face model, for instance:
     export HUGGINGFACEHUB_API_TOKEN=<yourtokenapi>
     ./run.sh --output-dir output/  rag  mistralai/Mistral-7B-Instruct-v0.3
 
-# Demo data
-## RAG and Cobol translation
-
-     ./run.sh --debug --question-dir data-cobol rag  gemma:2b phi3 llama3:8b     
 
 
 # How to configure expected answer (WIP)
