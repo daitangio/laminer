@@ -23,7 +23,7 @@ def build_file_prefix():
     Build a simple date-based-prefix based also on current hour
     """
     today = datetime.now()
-    formatted_date = today.strftime("%Y-%m-%d-%H")
+    formatted_date = today.strftime("%Y-%m-%d-%H%M")
     return formatted_date
 
 

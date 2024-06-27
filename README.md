@@ -25,7 +25,7 @@ Suppose you have your ollama in a host calld fatlama, proxy it with
 # Command examples and demo data
 ## RAG and Cobol translation
 
-    ./run.sh --debug --question-dir data-cobol rag  gemma:2b phi3 mistral:7b llama3:8b  codellama:latest    
+    ./run.sh --debug --question-dir data-cobol rag  gemma:2b phi3 mistral:7b llama3:8b codellama:latest
 
 ## Other (WIP)
 
