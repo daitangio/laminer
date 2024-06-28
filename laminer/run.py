@@ -53,7 +53,7 @@ def test_local_retrieval_qa(model: str, df: pd.DataFrame, retriever: any):
         )
     else:
         llm = ChatOllama(
-            base_url="http://localhost:11434", model=model, temperature=0.8, seed=1
+            base_url="http://localhost:11434", model=model, temperature=0, seed=1
         )
 
     chain = (
